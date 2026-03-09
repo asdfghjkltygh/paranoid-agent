@@ -1,0 +1,13 @@
+Trace,Pipeline,FPR,FNR,Ramp TTD,Spurious %,Probing Mean,Probing Std
+ec2_cpu,NAIVE,0.0,0.0,124,0.0,1.0,0.0
+ec2_cpu,SMA,0.0,0.0,86,0.0,1.0,0.0
+ec2_cpu,KALMAN,0.0,0.0,114,0.0,1.0,0.0
+ec2_cpu,DP,0.0,0.0,97,<0.001,0.826,0.108
+rds_cpu,NAIVE,0.0,0.0,17,36.859,1.0,0.0
+rds_cpu,SMA,0.286,0.0,11,40.458,1.0,0.0
+rds_cpu,KALMAN,0.0,0.0,11,37.186,1.0,0.0
+rds_cpu,DP,0.0,0.0,17,37.806,0.919,0.083
+elb_req,NAIVE,0.0,0.0,105,0.036,1.0,0.0
+elb_req,SMA,0.0,0.0,95,0.364,1.0,0.0
+elb_req,KALMAN,0.0,0.0,94,0.036,1.0,0.0
+elb_req,DP,0.0,0.0,101,<0.001,0.543,0.151
