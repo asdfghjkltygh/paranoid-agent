@@ -2,6 +2,8 @@
 
 **Black Hat Briefings: Technical White Paper**
 
+**Saahil Shenoy** | Founding AI Scientist, Bedrock Data
+
 ---
 
 ## Abstract
