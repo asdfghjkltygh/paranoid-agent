@@ -20,7 +20,9 @@ This PoC demonstrates a **Differential Privacy (DP) Governor**: a stochastic fil
 
 ## Demo
 
-![Terminal Demo](./assets/demo.gif)
+![DP-Governor: Same attack, different outcomes every time](./assets/demo_highlight.gif)
+
+[Watch the full demo on YouTube](https://youtube.com/PLACEHOLDER)
 
 ---
 
