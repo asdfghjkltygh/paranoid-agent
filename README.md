@@ -55,32 +55,32 @@ The `--demo` flag bypasses all Monte Carlo simulations and runs a visual termina
 ## Architecture
 
 ```
-                        Adversarial
-                        Telemetry
-                            |
-                            v
-                  +-------------------+
-                  |   DP-Governor     |
-                  |                   |
-                  |  1. Clip to [lo,hi]|
-                  |  2. Rolling Mean  |
-                  |  3. + Laplace(0,s)|  <-- Calibrated DP noise
-                  +-------------------+
-                            |
-                            v
-                  +-------------------+
-                  | Hysteresis Gate   |
-                  | (5 consecutive    |
-                  |  breaches needed) |
-                  +-------------------+
-                            |
-                   Trigger / No-Trigger
-                            |
-                            v
-                  +-------------------+
-                  | Agent Decision    |
-                  | (Scale / Isolate) |
-                  +-------------------+
+                    Adversarial
+                     Telemetry
+                         |
+                         v
+              +-----------------------+
+              |     DP-Governor       |
+              |                       |
+              |  1. Clip to [lo, hi]  |
+              |  2. Rolling Mean      |
+              |  3. + Laplace(0, s)   |  <-- Calibrated DP noise
+              +-----------------------+
+                         |
+                         v
+              +-----------------------+
+              |   Hysteresis Gate     |
+              |   (5 consecutive      |
+              |    breaches needed)   |
+              +-----------------------+
+                         |
+                Trigger / No-Trigger
+                         |
+                         v
+              +-----------------------+
+              |   Agent Decision      |
+              |   (Scale / Isolate)   |
+              +-----------------------+
 ```
 
 **Univariate:** Laplace mechanism (pure epsilon-DP). Sensitivity = (clip_hi - clip_lo) / window.
