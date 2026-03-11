@@ -18,6 +18,12 @@ This PoC demonstrates a **Differential Privacy (DP) Governor**: a stochastic fil
 
 ---
 
+## Demo
+
+![Terminal Demo](./assets/demo.gif)
+
+---
+
 ## Key Results
 
 | Metric | Value |
