@@ -156,7 +156,7 @@
 
 **Title:** The Paranoid Agent Is Watching
 
-**Visual:** QR code to GitHub repo. Terminal screenshot of --demo mode output.
+**Visual:** QR code to GitHub repo (https://github.com/asdfghjkltygh/paranoid-agent). Terminal screenshot of --demo mode output.
 
 **Content:**
 - Full PoC: `pip install -r requirements.txt && python src/dp_governor_poc.py`
