@@ -69,7 +69,7 @@ The DP-Governor sits between raw telemetry and the agent's decision logic:
 
 For univariate streams, this is straightforward: Laplace noise scaled to sensitivity Sens = (clip_hi - clip_lo) / w. For multivariate streams, the geometry changes. After Z-score normalization and L2-norm clipping (Abadi et al., 2016), we apply Gaussian noise with sigma = Sens · sqrt(2·ln(1.25/delta)) / epsilon. In *d* dimensions, the L2 norm of this noise has expected magnitude sigma·sqrt(d) (Chi-distributed), which inflates the noise floor toward the clip bound. This is why the multivariate threshold cannot use the same p95 + 1.5·sigma buffer as the univariate case: doing so pushes the threshold above clip_norm, making detection impossible. Full derivations are in Appendix A.
 
-![Univariate DP Defense](../assets/plot1_univariate_defense.png)
+![Univariate DP Defense](./assets/plot1_univariate_defense.png)
 *Figure 1: Univariate DP-Governor vs. deterministic filters on adversarial telemetry. Zoomed panels show that the Naive filter breaches the threshold during transient glitches, but the Hysteresis Gate (§2.2) absorbs these single-timestep breaches. The DP-Governor's advantage is anti-probing, not anti-glitch.*
 
 ### 2.2 The Hysteresis Gate
@@ -94,7 +94,7 @@ All agent parameters (thresholds, clipping bounds, standard deviations) are deri
 
 **Multivariate:** The **Server Machine Dataset (SMD)** (Su et al., KDD 2019), natively correlated enterprise telemetry from a single production cloud server. We select 3 features (CPU load, memory usage, network I/O) with organic cross-correlation (avg |rho| ≈ 0.84), providing a realistic correlated environment. Attacks are injected as correlated cascading failures (relative cascade weights 1.0/0.7/0.5, L2-normalized) simulating real infrastructure propagation patterns.
 
-![Multivariate Tripwire](../assets/plot2_multivariate_tripwire.png)
+![Multivariate Tripwire](./assets/plot2_multivariate_tripwire.png)
 *Figure 2: Multivariate DP-Governor applied to natively correlated Server Machine Dataset telemetry. The L2-norm threshold is set at p95 of the DP-filtered baseline (warm-up transients excluded); no sigma buffer is applied because the noise floor E[||Z||] ≈ sigma·sqrt(d) inflates p95 to near clip_norm, and adding 1.5·sigma would push the threshold above clip_norm (FNR=100%). The Hysteresis Gate provides false-positive control instead. Result: 0.004% mean spurious triggers (100-seed Monte Carlo, max=0.114%), 0.0% false negatives on the correlated ramp attack.*
 
 ### 3.2 The Dual-Boundary Burn Model
@@ -112,7 +112,7 @@ The attacker has no safe direction to probe. The geometry of this trap is indepe
 
 We evaluate probing resistance via two complementary methods: (1) a 100-seed Monte Carlo simulation (10 probes/seed, 1000 total probes) measuring the aggregate hysteresis-aware trigger rate, and (2) a 500-trial visualization (Figure 3) showing the distribution of filter outputs at the probe timestep. The MC simulation yields **82.6% trigger rate** (Table 1); the 500-trial visualization yields a consistent **~79%**, with the small gap attributable to different random seed populations. In both cases, Naive, SMA, and Kalman produce **identical outputs** across all trials. The DP-Governor produces a **distribution** straddling the threshold, meaning **~17.4% of probes become visible SOC anomalies**.
 
-![Probing Resistance Histograms](../assets/plot3_probing_resistance.png)
+![Probing Resistance Histograms](./assets/plot3_probing_resistance.png)
 *Figure 3: 500-trial probing histograms. Left: All deterministic filters (Naive, SMA, Kalman) collapse to a single point, granting the attacker 100% predictability. Right: The DP-Governor creates a probability distribution straddling the threshold (~79% trigger rate in this 500-trial run; 82.6% across the full 1000-probe MC in Table 1). Approximately 17-21% of probes are absorbed without triggering the agent, constituting an Attacker Failure per the Dual-Boundary Burn Model (§3.2).*
 
 *Note on metrics: FPR (Glitch) counts single-timestep threshold breaches against labeled non-anomaly segments. Spurious % counts hysteresis-confirmed (5-consecutive) false triggers on stationary clean data over 100 MC seeds. Both can be zero simultaneously: FPR measures labeled-segment accuracy, Spurious % measures noise-induced operational false alarms.*
@@ -134,17 +134,17 @@ We evaluate probing resistance via two complementary methods: (1) a 100-seed Mon
 
 An adaptive binary-search attacker narrows its belief interval per probe. Over 100 MC runs, **SOC alert probability exceeds attacker uncertainty within the first 5 probes**: the SOC knows before the attacker converges.
 
-![Adaptive Attacker Simulation](../assets/plot5_adaptive_attacker.png)
+![Adaptive Attacker Simulation](./assets/plot5_adaptive_attacker.png)
 *Figure 4: Adaptive binary-search attacker simulation (100 MC runs). The blue curve (attacker belief interval width) falls as the attacker narrows their estimate; the orange curve (cumulative SOC alert probability) rises as each probe risks noise-induced detection. Detection overtakes attacker uncertainty within the first 5 probes: the SOC wins the convergence race.*
 
 ### 3.5 Probe Margin & Epsilon Sweeps
 
 Probe margin sweep [0.1%-5%]: deterministic filters stay at 100% success; DP degrades gracefully (53.4% → 100.0%). The defense is not tuned to a single operating point.
 
-![Probe Margin Sweep](../assets/plot6_margin_sweep.png)
+![Probe Margin Sweep](./assets/plot6_margin_sweep.png)
 *Figure 5: Probe margin sweep across 5 margins (0.1%-5.0%). All deterministic filters (Naive, SMA, Kalman) remain at 100% probing success regardless of margin. The DP-Governor degrades gracefully: tighter margins (closer to threshold) give the attacker less room to separate signal from noise, reducing their success rate to as low as 53%.*
 
-![Epsilon Sweep](../assets/plot4_epsilon_sweep.png)
+![Epsilon Sweep](./assets/plot4_epsilon_sweep.png)
 *Figure 6: Privacy budget vs. probing success, attacker failure rate, and False Negative Rate (FNR). The shaded green region denotes the "Goldilocks Zone" (epsilon between 0.5 and 2.0), where noise remains operationally manageable while maintaining severe per-probe attacker failure rates and FNR=0%. At epsilon<=0.25, the DP noise floor exceeds the clip bounds, causing the epsilon-aware threshold to rise above the maximum possible filtered value, and the agent becomes completely blind to real anomalies (FNR=100%). At epsilon>=0.50, FNR drops to 0%. This proves the Goldilocks Zone is not an arbitrary tuning range but the only viable operating region that simultaneously achieves FNR=0% and meaningful probing resistance.*
 
 ### 3.6 Multi-Trace Robustness

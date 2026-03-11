@@ -14,6 +14,8 @@ This PoC demonstrates a **Differential Privacy (DP) Governor**: a stochastic fil
 
 **This PoC proves that Differential Privacy can be applied as a stochastic governor in control theory, not just for database queries.**
 
+**[Read the Technical White Paper (PDF)](./whitepaper.pdf)**
+
 ---
 
 ## Key Results
@@ -27,6 +29,26 @@ This PoC demonstrates a **Differential Privacy (DP) Governor**: a stochastic fil
 | P(survive 5 sequential probes) | **38.5%**; each probe independently risks SOC detection, compounding geometrically |
 | Ramp Time-to-Detect (TTD) | **~97 steps** (comparable across all filters, hysteresis-dominated) |
 | Multi-trace consistency | DP probing 54.3%-82.6% on stationary NAB traces (EC2, ELB) |
+
+---
+
+## Quick Start
+
+```bash
+make install   # pip install -r requirements.txt
+make run       # full evaluation: 6 plots + 2 tables (~3-5 min)
+make demo      # visual terminal demo (~30 sec)
+```
+
+Or manually:
+
+```bash
+pip install -r requirements.txt
+python dp_governor_poc.py          # full evaluation
+python dp_governor_poc.py --demo   # terminal demo
+```
+
+The `--demo` flag bypasses all Monte Carlo simulations and runs a visual terminal simulation with color-coded ANSI output, step-by-step attack visualization, and typewriter-paced text for screen recording.
 
 ---
 
@@ -67,37 +89,15 @@ This PoC demonstrates a **Differential Privacy (DP) Governor**: a stochastic fil
 
 ---
 
-## Quick Start
+## Data Sources
 
-### Install
+All data is fetched live from the [Numenta Anomaly Benchmark (NAB)](https://github.com/numenta/NAB):
 
-```bash
-# Core PoC dependencies
-pip install -r requirements.txt
+- `ec2_cpu_utilization_5f5533.csv`: EC2 CPU utilization
+- `rds_cpu_utilization_cc0c53.csv`: RDS CPU utilization
+- `elb_request_count_8c0756.csv`: ELB request count
 
-# Optional: For PDF generation only
-pip install -r requirements-pdf.txt
-```
-
-### Run Full Evaluation (generates 6 plots + 2 tables)
-
-```bash
-python src/dp_governor_poc.py
-```
-
-This runs the complete pipeline: data fetch, adversarial injection, 4 filter pipelines, Monte Carlo probing (100 seeds x 10 probes), epsilon sweep, adaptive attacker simulation, probe margin sweep, and multi-trace robustness evaluation. Takes ~3-5 minutes.
-
-### Run Terminal Demo (for video recording)
-
-```bash
-python src/dp_governor_poc.py --demo
-```
-
-The `--demo` flag bypasses all Monte Carlo simulations and runs a single, highly visual terminal simulation with:
-- Color-coded ANSI output
-- Step-by-step attack visualization
-- Live probe-by-probe DP filter output
-- Typewriter-paced text for screen recording
+Deterministic synthetic fallbacks are included if the network fetch fails.
 
 ---
 
@@ -116,63 +116,28 @@ The `--demo` flag bypasses all Monte Carlo simulations and runs a single, highly
 
 ---
 
-## Data Sources
-
-All data is fetched live from the [Numenta Anomaly Benchmark (NAB)](https://github.com/numenta/NAB):
-
-- `ec2_cpu_utilization_5f5533.csv`: EC2 CPU utilization
-- `ec2_disk_write_bytes_1ef3de.csv`: EC2 disk write bytes
-- `ec2_network_in_5abac7.csv`: EC2 network ingress
-- `rds_cpu_utilization_cc0c53.csv`: RDS CPU utilization
-- `elb_request_count_8c0756.csv`: ELB request count
-
-Deterministic synthetic fallbacks are included if the network fetch fails.
-
----
-
-## Requirements
-
-- Python >= 3.9
-- numpy
-- pandas
-- matplotlib
-- seaborn
-- scikit-learn
-- weasyprint (PDF generation only)
-- markdown (PDF generation only)
-
-### Generate White Paper PDF
-
-```bash
-python scripts/build_pdf.py
-```
-
-Outputs `docs/whitepaper.pdf` with academic formatting.
-
----
-
 ## Repository Structure
 
 ```
 .
+├── .gitignore
+├── LICENSE
+├── Makefile                        # make install / make run / make demo
 ├── README.md
 ├── requirements.txt
-├── requirements-pdf.txt
-├── bhrb_message.txt
-├── src/
-│   └── dp_governor_poc.py        # Main PoC script
-├── assets/
-│   ├── plot1-6_*.png             # Generated evaluation plots
-│   ├── table1_metrics.csv        # Primary metrics
-│   └── table2_multi_trace.csv    # Multi-trace results
-├── docs/
-│   ├── whitepaper.md             # Technical white paper
-│   ├── whitepaper.pdf            # Generated PDF
-│   ├── slidedeck_outline.md      # 15-slide presentation outline
-│   └── gemini_review_prompt.md   # Reviewer simulation prompt
-├── scripts/
-│   └── build_pdf.py              # PDF generator (weasyprint)
-└── data/                         # NAB data (fetched at runtime)
+├── whitepaper.pdf                  # Technical white paper (pre-built with plots)
+├── whitepaper.md                   # White paper source (markdown)
+├── slidedeck_outline.md            # 15-slide presentation outline
+├── dp_governor_poc.py              # Main PoC script (~2500 lines)
+└── assets/
+    ├── plot1_univariate_defense.png
+    ├── plot2_multivariate_tripwire.png
+    ├── plot3_probing_resistance.png
+    ├── plot4_epsilon_sweep.png
+    ├── plot5_adaptive_attacker.png
+    ├── plot6_margin_sweep.png
+    ├── table1_metrics.csv
+    └── table2_multi_trace.csv
 ```
 
 ---

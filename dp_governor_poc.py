@@ -7,7 +7,7 @@ Evaluates four parallel filter pipelines (Naive, SMA, Kalman, DP-Governor)
 on real AWS CloudWatch + SMD telemetry with adversarial anomaly injection.
 Generates 6 evaluation plots + 2 metric tables.
 
-Usage: python src/dp_governor_poc.py [--demo]
+Usage: python dp_governor_poc.py [--demo]
 """
 
 # ─────────────────────────── Imports ───────────────────────────
@@ -37,9 +37,8 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 # per-trial inside Monte Carlo loops.
 
 # ─────────────────────────── Global Config ─────────────────────
-# Resolve paths relative to project root (one level up from src/)
-_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-_PROJECT_ROOT = os.path.dirname(_SCRIPT_DIR)
+# Resolve paths relative to project root (script lives at repo root)
+_PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(_PROJECT_ROOT, "assets")
 
 # Colorblind-safe palette (IBM Design / Wong 2011) + distinct linestyles

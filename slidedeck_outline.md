@@ -159,8 +159,8 @@
 **Visual:** QR code to GitHub repo (https://github.com/asdfghjkltygh/paranoid-agent). Terminal screenshot of --demo mode output.
 
 **Content:**
-- Full PoC: `pip install -r requirements.txt && python src/dp_governor_poc.py`
-- Terminal demo: `python src/dp_governor_poc.py --demo`
+- Full PoC: `pip install -r requirements.txt && python dp_governor_poc.py`
+- Terminal demo: `python dp_governor_poc.py --demo`
 - White paper, slide deck, and all evaluation artifacts included
 - MIT licensed
 
