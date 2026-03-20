@@ -51,9 +51,9 @@ make demo      # visual terminal demo (~30 sec)
 Or manually:
 
 ```bash
-pip install -r requirements.txt
-python dp_governor_poc.py          # full evaluation
-python dp_governor_poc.py --demo   # terminal demo
+python3 -m pip install -r requirements.txt
+python3 dp_governor_poc.py          # full evaluation
+python3 dp_governor_poc.py --demo   # terminal demo
 ```
 
 The `--demo` flag bypasses all Monte Carlo simulations and runs a visual terminal simulation with color-coded ANSI output, step-by-step attack visualization, and typewriter-paced text for screen recording.
@@ -102,7 +102,7 @@ The `--demo` flag bypasses all Monte Carlo simulations and runs a visual termina
 All data is fetched live from the [Numenta Anomaly Benchmark (NAB)](https://github.com/numenta/NAB):
 
 - `ec2_cpu_utilization_5f5533.csv`: EC2 CPU utilization
-- `rds_cpu_utilization_cc0c53.csv`: RDS CPU utilization
+- `rds_cpu_utilization_e47b3b.csv`: RDS CPU utilization
 - `elb_request_count_8c0756.csv`: ELB request count
 
 Deterministic synthetic fallbacks are included if the network fetch fails.
@@ -138,6 +138,7 @@ Deterministic synthetic fallbacks are included if the network fetch fails.
 ├── slidedeck_outline.md            # 15-slide presentation outline
 ├── dp_governor_poc.py              # Main PoC script (~2500 lines)
 └── assets/
+    ├── demo_highlight.gif
     ├── plot1_univariate_defense.png
     ├── plot2_multivariate_tripwire.png
     ├── plot3_probing_resistance.png
