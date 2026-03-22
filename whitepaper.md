@@ -84,7 +84,7 @@ Vectorized NumPy implementation: **0.2ms for 4032 datapoints**, ~52x faster than
 
 ### 2.4 Dynamic Sensitivity Bounding
 
-All agent parameters (thresholds, clipping bounds, standard deviations) are derived from the first 25% of clean data (chronological burn-in split) to prevent time-series leakage. Clipping bounds are selected via utility-aware empirical ablation over candidate percentiles [95th, 99th], requiring 0.0% spurious triggers AND 0.0% FNR with a lowest-probing-success tiebreaker. The univariate decision threshold is set at p95 + 1.5·sigma of the DP-filtered burn-in distribution (epsilon-aware). Full calibration procedure in Appendix D.
+All agent parameters (thresholds, clipping bounds, standard deviations) are derived from the first 25% of clean data (chronological burn-in split) to prevent time-series leakage. Clipping bounds are selected via utility-aware empirical ablation over candidate percentiles [95th, 99th], requiring zero false alarms AND 0.0% FNR with a lowest-probing-success tiebreaker. The univariate decision threshold is set at p95 + 1.5·sigma of the DP-filtered burn-in distribution (epsilon-aware). Full calibration procedure in Appendix D.
 
 ---
 
@@ -128,7 +128,7 @@ We evaluate probing resistance via two complementary methods: (1) a 100-seed Mon
 | Kalman   | 0.0         | 0.0        | 114              | 0.0        | 1.000 +/- 0.000      | 1.9         |
 | **DP**   | **0.0**     | **0.0**    | **97**           | **<0.001** | **0.826 +/- 0.108**  | **0.2**     |
 
-**The critical metric is the Probing column:** all three deterministic filters give the attacker a 100% success rate with zero variance. The DP-Governor is the only pipeline that introduces uncertainty, and that uncertainty compounds geometrically across multi-probe attack sequences.
+**The critical metric is the Probing column:** all three deterministic filters give the attacker a 100% success rate with zero variance. The DP-Governor is the only pipeline that introduces uncertainty, and that uncertainty compounds across multi-probe attack sequences.
 
 *Ramp TTD measures steps from ramp onset to the first hysteresis-confirmed trigger. DP TTD is MC-averaged (100 seeds). TTD is comparable across all filters (86-124), demonstrating that the Hysteresis Gate, not the DP noise, dominates detection lag. SMA latency reflects a standard causal Python loop; a vectorized implementation would approach DP-Governor speeds. Spurious % shown as <0.001 in both table and CSV where the Hysteresis Gate suppresses noise-induced triggers to below measurable precision. Anomaly injection indices are calculated dynamically from the burn-in split, ensuring identical evaluation between Table 1 and Table 2.*
 
@@ -151,7 +151,7 @@ Probe margin sweep [0.1%-5%]: deterministic filters stay at 100% success; DP deg
 
 ### 3.6 Multi-Trace Robustness
 
-Across EC2 CPU, RDS CPU, and ELB request count with burn-in-calibrated thresholds: 54.3%-82.6% probing success on stationary traces (EC2, ELB), **<0.001% spurious triggers on EC2 and ELB**, 0% false negatives. The RDS trace exhibits distributional shift beyond the burn-in window, causing elevated spurious rates (37-40%) across **all** filters including deterministic baselines; this is not a DP-specific artifact, but demonstrates the need for online recalibration (§4.4). The SMA's nonzero FPR (0.286) on the RDS glitch segment reflects its 10-step causal window: the 8-sigma glitch is averaged into a sustained above-threshold signal that persists across the hysteresis gate, whereas the Kalman filter's adaptive gain dampens the transient faster. ELB achieves <0.001% DP spurious under the updated threshold calibration (p95 + 1.5·sigma).
+Across EC2 CPU, RDS CPU, and ELB request count with burn-in-calibrated thresholds: 54.3%-82.6% probing success on stationary traces (EC2, ELB), **<0.001% spurious triggers on EC2 and ELB**, 0% false negatives. The RDS trace exhibits distributional shift beyond the burn-in window, causing elevated false alarm rates (37-40%) across **all** filters including deterministic baselines; this is not a DP-specific artifact, but demonstrates the need for online recalibration (§4.4). The SMA's nonzero FPR (0.286) on the RDS glitch segment reflects its 10-step causal window: the 8-sigma glitch is averaged into a sustained above-threshold signal that persists across the hysteresis gate, whereas the Kalman filter's adaptive gain dampens the transient faster. ELB achieves <0.001% DP spurious under the updated threshold calibration (p95 + 1.5·sigma).
 
 **Table 2: Multi-Trace Robustness (all pipelines, hysteresis-aware, burn-in calibrated)**
 
@@ -178,7 +178,7 @@ Across EC2 CPU, RDS CPU, and ELB request count with burn-in-calibrated threshold
 
 ### 4.1 Why We Abandon Global Epsilon Bounds
 
-Under basic composition, 4032 timesteps at epsilon=1.5 yields epsilon_total = 6048, a number that would be absurd in a traditional DP deployment protecting a static dataset. We are not protecting a static dataset. We are weaponizing the indistinguishability property as a per-probe detection mechanism. The security guarantee is not bounded global leakage; it is that each probe independently carries a non-trivial probability of triggering a SOC alert, compounding geometrically across the attack sequence.
+Under basic composition, 4032 timesteps at epsilon=1.5 yields epsilon_total = 6048, a number that would be absurd in a traditional DP deployment protecting a static dataset. We aren't protecting a static dataset. We are weaponizing the indistinguishability property as a per-probe detection mechanism. The security guarantee is not bounded global leakage; it is that each probe independently carries a non-trivial probability of triggering a SOC alert, compounding across the attack sequence.
 
 ### 4.2 Distinction from Randomized Smoothing
 
@@ -186,7 +186,7 @@ RS (Cohen et al., 2019) certifies robustness at a single point in time on static
 
 ### 4.3 Attacker Knowledge
 
-The attacker knows a threshold-based rule is used but not the DP parameters. Even with full parameter knowledge, noise is sampled fresh each timestep; the attacker knows the distribution but cannot predict the realization. The burn rate guarantee holds.
+The attacker knows a threshold-based rule is used but not the DP parameters. Even with full parameter knowledge, noise is sampled fresh each timestep; the attacker knows the distribution but can't predict the realization. The burn rate guarantee holds.
 
 ### 4.4 Operational Deployment Considerations
 
@@ -196,7 +196,7 @@ Five production challenges and mitigations (detailed in Appendix C): (1) concept
 
 ## 5. Conclusion
 
-The DP-Governor demonstrates that Differential Privacy's core mathematical property, indistinguishability, has a second life beyond dataset protection. Applied as an inline stochastic governor on autonomous feedback loops, it transforms adversarial reconnaissance from a free, deterministic extraction into a geometrically compounding gamble that the attacker cannot win quietly.
+The DP-Governor demonstrates that Differential Privacy's core mathematical property, indistinguishability, has a second life beyond dataset protection. Applied as an inline stochastic governor on autonomous feedback loops, it transforms adversarial reconnaissance from a free, deterministic extraction into a compounding gamble that the attacker can't win quietly.
 
 ---
 
@@ -219,7 +219,7 @@ The DP-Governor demonstrates that Differential Privacy's core mathematical prope
 
 ## Appendix B: Randomized Smoothing Distinction
 
-RS (Cohen et al., 2019) certifies a radius for static classification. The DP-Governor addresses iterative reconnaissance on stateful feedback loops. Key axes: (1) bounded sensitivity clipping before noise yields <0.001% spurious triggers on streaming data, which RS cannot guarantee; (2) sequential burn rate with geometric compounding vs. single-shot certification; (3) input-side signal conditioning vs. output-side model smoothing.
+See Section 4.2 for the three axes of distinction from Randomized Smoothing. The key technical point is that RS certifies a fixed L2 ball around one input, while the DP-Governor applies independent noise draws at each timestep. RS cannot provide sequential guarantees because its certificate is consumed in one evaluation. The DP-Governor's defense renews with every probe, making the burn rate a property of the mechanism itself, not a one-time bound.
 
 ## Appendix C: Deployment Considerations
 

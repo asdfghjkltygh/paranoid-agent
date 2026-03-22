@@ -10,7 +10,7 @@ Black Hat Briefings: Supplementary PoC
 
 Autonomous infrastructure agents (auto-scalers, SecOps isolation bots) make threshold-breach decisions on live telemetry. An attacker who can inject small perturbations into the data stream can **discover the exact decision boundary** through slow "boiling frog" probes, then exploit it at will. Every deterministic filter (moving averages, Kalman filters) is defeated 100% of the time.
 
-This PoC demonstrates a **Differential Privacy (DP) Governor**: a stochastic filter that makes the decision boundary probabilistic. The attacker can never be certain whether a probe will trigger the agent. Each failed probe is a **visible SOC alert**, burning the attacker's operational stealth.
+This PoC demonstrates a **Differential Privacy (DP) Governor**: a stochastic filter that makes the decision boundary probabilistic. The attacker can't ever be certain whether a probe will trigger the agent. Each failed probe is a **visible SOC alert**, burning the attacker's operational stealth.
 
 **This PoC proves that Differential Privacy can be applied as a stochastic governor in control theory, not just for database queries.**
 
